@@ -3,7 +3,7 @@ from app.adapters.repository import GitRepoRepository
 
 class ImportGitRepo:
     def __init__(
-        self, user_id: str, name: str, url: str, repository: GitRepoRepository
+        self, user_id: int, name: str, url: str, repository: GitRepoRepository
     ) -> None:
         self.user_id = user_id
         self.name = name

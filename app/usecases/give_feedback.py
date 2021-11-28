@@ -4,8 +4,8 @@ from app.adapters.repository import GitRepoRepository
 class GiveFeedback:
     def __init__(
         self,
-        giver_id: str,
-        git_repo_id: str,
+        giver_id: int,
+        git_repo_id: int,
         message: str,
         repository: GitRepoRepository,
     ) -> None:

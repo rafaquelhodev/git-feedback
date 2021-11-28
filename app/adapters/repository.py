@@ -6,23 +6,23 @@ from app.domain.model import Feedback, GitRepo
 
 class GitRepoRepository(ABC):
     @abstractmethod
-    def get(self, git_repo_id: str) -> GitRepo:
+    def get(self, git_repo_id: int) -> GitRepo:
         pass
 
     @abstractmethod
-    def list_user_repos(self, user_id: str) -> List[GitRepo]:
+    def list_user_repos(self, user_id: int) -> List[GitRepo]:
         pass
 
     @abstractmethod
-    def list_feedbacks(self, git_repo_id: str) -> List[Feedback]:
+    def list_feedbacks(self, git_repo_id: int) -> List[Feedback]:
         pass
 
     @abstractmethod
-    def add_feedback(self, git_repo_id: str, giver_id: str):
+    def add_feedback(self, git_repo_id: int, giver_id: int):
         pass
 
     @abstractmethod
-    def import_repo(self, user_id: str, name: str, url: str) -> str:
+    def import_repo(self, user_id: int, name: str, url: str) -> str:
         pass
 
 
@@ -43,7 +43,7 @@ class GitRepositoryMemory(GitRepoRepository):
 
         return git_repo.get_feedbacks()
 
-    def add_feedback(self, git_repo_id: str, message: str, giver_id: str):
+    def add_feedback(self, git_repo_id: int, message: str, giver_id: int):
         feedback = Feedback(message=message, giver_id=giver_id)
 
         git_repo = self.get(git_repo_id)
@@ -53,11 +53,11 @@ class GitRepositoryMemory(GitRepoRepository):
         git_repo.receive_feedback(feedback)
         return
 
-    def import_repo(self, user_id: str, name: str, url: str) -> str:
+    def import_repo(self, user_id: int, name: str, url: str) -> str:
         git_repo = GitRepo(name=name, url=url, user_id=user_id)
         self.__git_repos.append(git_repo)
         return git_repo.id
 
-    def list_user_repos(self, user_id: str) -> List[GitRepo]:
+    def list_user_repos(self, user_id: int) -> List[GitRepo]:
         user_repos = [repo for repo in self.__git_repos if repo.user_id == user_id]
         return user_repos

@@ -1,14 +1,13 @@
 from __future__ import annotations
-from uuid import uuid4
 
 from app.domain.exceptions import InvalidFeedback
 
 
 class User:
-    def __init__(self, name: str, email: str, id: str = None) -> None:
+    def __init__(self, name: str, email: str, id: int = None) -> None:
+        self.id = id
         self.name = name
         self.email = email
-        self.id = uuid4() if not id else id
 
     def give_feedback(self, git_repo: GitRepo, message: str, private: bool):
         feedback = Feedback(message=message, giver_id=self.id, private=private)
@@ -16,8 +15,8 @@ class User:
 
 
 class GitRepo:
-    def __init__(self, name: str, url: str, user_id: str, id: str = None) -> None:
-        self.id = uuid4() if not id else id
+    def __init__(self, name: str, url: str, user_id: int, id: int = None) -> None:
+        self.id = id
         self.name = name
         self.url = url
         self.user_id = user_id
@@ -36,7 +35,7 @@ class GitRepo:
 
 
 class Feedback:
-    def __init__(self, message: str, giver_id: str, private: bool = False) -> None:
+    def __init__(self, message: str, giver_id: int, private: bool = False) -> None:
         self.message = message
         self.private = private
         self.giver_id = giver_id

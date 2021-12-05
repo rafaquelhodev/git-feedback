@@ -4,10 +4,11 @@ from app.domain.exceptions import InvalidFeedback
 
 
 class User:
-    def __init__(self, name: str, email: str, id: int = None) -> None:
+    def __init__(self, name: str, email: str, password: str, id: int = None) -> None:
         self.id = id
         self.name = name
         self.email = email
+        self.password = password
 
     def give_feedback(self, git_repo: GitRepo, message: str, private: bool):
         feedback = Feedback(message=message, giver_id=self.id, private=private)

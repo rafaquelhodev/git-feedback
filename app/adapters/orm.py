@@ -20,6 +20,7 @@ users = Table(
     mapper_registry.metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("name", String(255)),
+    Column("password", String(255)),
     Column("email", Integer, nullable=False),
 )
 
@@ -44,6 +45,7 @@ feedbacks = Table(
 
 
 def start_mappers():
+    users_mapper = mapper_registry.map_imperatively(model.User, users)
     feedbacks_mapper = mapper_registry.map_imperatively(model.Feedback, feedbacks)
     mapper_registry.map_imperatively(
         model.GitRepo,

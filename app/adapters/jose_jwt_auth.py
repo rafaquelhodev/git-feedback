@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-from jose import jwt
+from jose import jwt, JWTError
+from app.domain.exceptions import InvalidCredentials
 
 from app.ports.jwt_auth import JwtAuth
 
@@ -20,3 +21,12 @@ class JoseJwtAuth(JwtAuth):
 
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt
+
+    @staticmethod
+    def decode_access_token(token: str, validator_key: str) -> str:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            username: str = payload.get(validator_key)
+            return username
+        except JWTError:
+            raise InvalidCredentials("Invalid credentials")

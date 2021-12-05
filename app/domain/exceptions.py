@@ -8,3 +8,7 @@ class InvalidUserRegistration(Exception):
 
 class UnauthorizedUser(Exception):
     pass
+
+
+class InvalidCredentials(Exception):
+    pass

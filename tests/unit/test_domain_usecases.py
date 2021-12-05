@@ -1,7 +1,13 @@
+from datetime import datetime, time
 import pytest
 from app.adapters.jose_jwt_auth import JoseJwtAuth
-from app.domain.exceptions import InvalidUserRegistration, UnauthorizedUser
+from app.domain.exceptions import (
+    InvalidCredentials,
+    InvalidUserRegistration,
+    UnauthorizedUser,
+)
 from app.domain.model import User
+from app.domain_usecases.authenticate_user import AuthenticateUser
 from app.domain_usecases.login_user import LoginUser
 from app.domain_usecases.register_user import RegisterUser
 from app.adapters.password_hasher_passlib import PasswordPassLib
@@ -150,3 +156,63 @@ class TestLoginUser:
         with pytest.raises(UnauthorizedUser) as error:
             login_user.execute()
             assert "Incorrect username or password" in str(error.value)
+
+
+class TestAuthenticateUser:
+    def test_authenticate_user(self):
+        user_repo = UserRepositoryMemory()
+
+        register_user = RegisterUser(
+            user_repository=user_repo,
+            password_lib=PasswordPassLib,
+            username="John",
+            email="john@test.com",
+            password="123456",
+        )
+
+        register_user.execute()
+
+        login_user = LoginUser(
+            jwt_auth=JoseJwtAuth,
+            user_repository=user_repo,
+            password_hasher=PasswordPassLib,
+            username="John",
+            password="123456",
+            expire_minutes=30,
+        )
+
+        resp = login_user.execute()
+
+        token = resp.get("access_token")
+
+        authenticate_user = AuthenticateUser(
+            jwt_auth=JoseJwtAuth, user_repository=user_repo, token=token
+        )
+
+        user_authenticated = authenticate_user.execute()
+
+        assert user_authenticated.name == "John"
+        assert user_authenticated.email == "john@test.com"
+
+    def test_authentication_with_invalid_token(self):
+        user_repo = UserRepositoryMemory()
+
+        register_user = RegisterUser(
+            user_repository=user_repo,
+            password_lib=PasswordPassLib,
+            username="John",
+            email="john@test.com",
+            password="123456",
+        )
+
+        register_user.execute()
+
+        token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ1.eyJzdWIiOiJKb2huIiwiZXhwIjoxNjM4NzQxODQxfQ.S7b62hqyGsXNTw5xIO-vPis_ZiRU8omvH1jaZ5phjOs"
+
+        authenticate_user = AuthenticateUser(
+            jwt_auth=JoseJwtAuth, user_repository=user_repo, token=token
+        )
+
+        with pytest.raises(InvalidCredentials) as error:
+            authenticate_user.execute()
+            assert "Invalid credentials" in str(error.value)

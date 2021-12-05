@@ -1,5 +1,5 @@
 from typing import List
-from app.adapters.user_repository import UserRepository
+from app.ports.user_repository import UserRepository
 from app.domain.model import User
 
 

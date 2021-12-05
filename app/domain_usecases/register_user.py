@@ -1,5 +1,5 @@
-from app.ports.password import Password
-from app.adapters.user_repository import UserRepository
+from app.ports.password_hasher import PasswordHasher
+from app.ports.user_repository import UserRepository
 from app.domain.exceptions import InvalidUserRegistration
 from app.domain.model import User
 
@@ -8,7 +8,7 @@ class RegisterUser:
     def __init__(
         self,
         user_repository: UserRepository,
-        password_lib: Password,
+        password_lib: PasswordHasher,
         username: str,
         email: str,
         password: str,

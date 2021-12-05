@@ -1,9 +1,11 @@
 import pytest
-from app.domain.exceptions import InvalidUserRegistration
+from app.adapters.jose_jwt_auth import JoseJwtAuth
+from app.domain.exceptions import InvalidUserRegistration, UnauthorizedUser
 from app.domain.model import User
+from app.domain_usecases.login_user import LoginUser
 from app.domain_usecases.register_user import RegisterUser
-from app.adapters.password_passlib import PasswordPassLib
-from app.ports.user_repository_memory import UserRepositoryMemory
+from app.adapters.password_hasher_passlib import PasswordPassLib
+from app.adapters.user_repository_memory import UserRepositoryMemory
 
 
 class TestRegisterUser:
@@ -66,3 +68,85 @@ class TestRegisterUser:
         with pytest.raises(InvalidUserRegistration) as error:
             register_user.execute()
             assert "User name or email already in use" in str(error.value)
+
+
+class TestLoginUser:
+    def test_login_user(self):
+        user_repo = UserRepositoryMemory()
+
+        register_user = RegisterUser(
+            user_repository=user_repo,
+            password_lib=PasswordPassLib,
+            username="John",
+            email="john@test.com",
+            password="123456",
+        )
+
+        register_user.execute()
+
+        login_user = LoginUser(
+            jwt_auth=JoseJwtAuth,
+            user_repository=user_repo,
+            password_hasher=PasswordPassLib,
+            username="John",
+            password="123456",
+            expire_minutes=30,
+        )
+
+        resp = login_user.execute()
+
+        assert resp.get("access_token") != ""
+        assert resp.get("access_token") != None
+        assert resp.get("token_type") == "bearer"
+
+    def test_login_user_with_incorrect_password(self):
+        user_repo = UserRepositoryMemory()
+
+        register_user = RegisterUser(
+            user_repository=user_repo,
+            password_lib=PasswordPassLib,
+            username="John",
+            email="john@test.com",
+            password="123456",
+        )
+
+        register_user.execute()
+
+        login_user = LoginUser(
+            jwt_auth=JoseJwtAuth,
+            user_repository=user_repo,
+            password_hasher=PasswordPassLib,
+            username="John",
+            password="12345",
+            expire_minutes=30,
+        )
+
+        with pytest.raises(UnauthorizedUser) as error:
+            login_user.execute()
+            assert "Incorrect username or password" in str(error.value)
+
+    def test_login_user_that_doesnt_exist(self):
+        user_repo = UserRepositoryMemory()
+
+        register_user = RegisterUser(
+            user_repository=user_repo,
+            password_lib=PasswordPassLib,
+            username="John",
+            email="john@test.com",
+            password="123456",
+        )
+
+        register_user.execute()
+
+        login_user = LoginUser(
+            jwt_auth=JoseJwtAuth,
+            user_repository=user_repo,
+            password_hasher=PasswordPassLib,
+            username="Mary",
+            password="123456",
+            expire_minutes=30,
+        )
+
+        with pytest.raises(UnauthorizedUser) as error:
+            login_user.execute()
+            assert "Incorrect username or password" in str(error.value)

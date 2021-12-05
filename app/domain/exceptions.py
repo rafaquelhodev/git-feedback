@@ -4,3 +4,7 @@ class InvalidFeedback(Exception):
 
 class InvalidUserRegistration(Exception):
     pass
+
+
+class UnauthorizedUser(Exception):
+    pass

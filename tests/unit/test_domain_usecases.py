@@ -1,5 +1,5 @@
 from app.domain_usecases.register_user import RegisterUser
-from app.ports.password_passlib import PasswordPassLib
+from app.adapters.password_passlib import PasswordPassLib
 from app.ports.user_repository_memory import UserRepositoryMemory
 
 

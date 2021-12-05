@@ -1,6 +1,6 @@
 from passlib.hash import pbkdf2_sha256
 
-from app.adapters.password import Password
+from app.ports.password import Password
 
 
 class PasswordPassLib(Password):

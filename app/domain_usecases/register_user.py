@@ -1,4 +1,4 @@
-from app.adapters.password import Password
+from app.ports.password import Password
 from app.adapters.user_repository import UserRepository
 from app.domain.exceptions import InvalidUserRegistration
 from app.domain.model import User

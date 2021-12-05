@@ -1,6 +1,36 @@
 from app.domain import model
 
 
+def test_can_insert_user(session):
+    session.add(model.User(name="Mary", email="mary@test.com", password="123"))
+    session.commit()
+
+    [user] = session.execute(
+        "SELECT * FROM users WHERE id=:id",
+        dict(id=1),
+    )
+
+    assert user.name == "Mary"
+    assert user.email == "mary@test.com"
+    assert user.password == "123"
+
+
+def test_can_query_user(session):
+    session.execute(
+        "INSERT INTO users (name, email, password) VALUES "
+        '("Mary", "mary@test.com", "123")'
+    )
+
+    session.add(model.User(name="Mary", email="mary@test.com", password="123"))
+    session.commit()
+
+    user = session.query(model.User).all()[0]
+
+    assert user.name == "Mary"
+    assert user.email == "mary@test.com"
+    assert user.password == "123"
+
+
 def test_can_insert_git_repo(session):
     session.add(model.GitRepo(name="api-foo", url="github.com/api-foo", user_id=1))
     session.commit()

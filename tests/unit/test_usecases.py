@@ -10,7 +10,7 @@ class TestImportGitRepo:
     def test_user_should_import_git_repo(self):
         git_repo_repository = GitRepositoryMemory()
 
-        user = User(id=1, name="John", email="john@test.com")
+        user = User(id=1, name="John", password="123", email="john@test.com")
 
         import_git_repo = ImportGitRepo(
             user_id=user.id,
@@ -33,7 +33,7 @@ class TestGiveFeedBack:
     def test_user_gives_feedback(self):
         git_repo_repository = GitRepositoryMemory()
 
-        user = User(id=1, name="Mary", email="mary@test.com")
+        user = User(id=1, name="Mary", password="123", email="mary@test.com")
 
         import_git_repo = ImportGitRepo(
             user_id=user.id,
@@ -44,7 +44,7 @@ class TestGiveFeedBack:
 
         git_repo_id = import_git_repo.execute()
 
-        giver = User(id=2, name="John", email="john@test.com")
+        giver = User(id=2, name="John", password="123", email="john@test.com")
 
         give_feedback = GiveFeedback(
             giver_id=giver.id,
